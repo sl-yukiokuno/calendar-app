@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>ホーム</h1>
+    <p>404 Not Found Page</p>
   </div>
 </template>
 
