@@ -1,7 +1,11 @@
+import '@/plugins/composition-api';
 import {
   CalendarEventDetail,
   CalendarEventTodayDetail,
+  NewCalendarEvent,
 } from '@/store/calendar-event.model';
+import { reactive } from '@vue/composition-api';
+import { profileStore } from './profile';
 
 export const calendarEventMockData: CalendarEventDetail[] = [
   {
@@ -116,3 +120,50 @@ export const todayCalendarEventMockData: CalendarEventTodayDetail[] = [
     shared: true,
   },
 ];
+
+export const calendarEventStore = reactive({
+  calendarEvents: calendarEventMockData,
+});
+
+/**
+ * UUIDを生成
+ */
+const generateUuidMock = () => {
+  return 'a8b2c7c8-ebe5-5c789-atd0-xxxxxxxxxxx'.replace(/x/g, () =>
+    Math.floor(Math.random() * 16).toString(16),
+  );
+};
+
+/**
+ * カレンダーにイベントを追加
+ * @param newCalendarEvent 追加するカレンダーイベント
+ */
+export const add = (newCalendarEvent: NewCalendarEvent) => {
+  newCalendarEvent.id = generateUuidMock();
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  newCalendarEvent.userId = profileStore.profile!.userId;
+  calendarEventStore.calendarEvents.push(
+    newCalendarEvent as CalendarEventDetail,
+  );
+};
+
+/**
+ * カレンダーイベントを更新
+ * @param newCalendarEvent 更新するカレンダーイベント
+ */
+export const update = (newCalendarEvent: NewCalendarEvent) => {
+  const index = calendarEventStore.calendarEvents.findIndex(
+    event => event.id === newCalendarEvent.id,
+  );
+
+  if (index === -1) {
+    // 更新対象が見つからなかった場合
+    return;
+  }
+
+  calendarEventStore.calendarEvents.splice(
+    index,
+    1,
+    newCalendarEvent as CalendarEventDetail,
+  );
+};
